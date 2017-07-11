@@ -97,17 +97,21 @@ We generate a random initialization vector (IV) and a random authentication tag 
 \subsection{Entering a $CS$}
 The client gets the encrypted $SK$ as a packet composed of the parameters of the $SK$. It extracts the IV, AT, and its ID. The client proceeds to a decryption of $SK$ such as $DecSym(CEK, SK, IV, AT)$ and decrypt the most recent encrypted messages which have been encrypted under the decrypted $SK$.
 \subsection{Regenerating $SK$}
-One of the two participants (users) generates a new $SK$ and its ID. The user who generated the new $SK$ get the other user's $PKB$ and encrypt the $SK$ with the Asymmetric encryption function such as $EncAsym(PKB, SK)$ and encapsulate the encrypted $SK$ and its ID such as $SK=(SK||ID)$.
+One of the two participants (users) generates a new $SK$ and its ID. The user who generated the new $SK$ gets the other user's $PKB$ and encrypt the $SK$ with the Asymmetric encryption function such as $EncAsym(PKB, SK)$ and encapsulate the encrypted $SK$ and its ID such as $SK=(SK||ID)$.
 
 \subsection{Message encryption}
 For every message are generated an initialization vector (IV) and authentication tag (AT), both on 128 bits. The plain text message $m$ is encrypted under $SK$ by the asymmetric encryption function such as $em=EncSym(SK, m, IV,AT)$, where $em$ is the encrypted message. Once encrypted, $em$ is encapsulated with its parameters such as $em=(em||IV||AT||ID)$.
 
 \subsection{Message decryption}
-The client extracts the cryptographic parameters from the message itself. The client decrypts the encrypted message $em$ under $SK$ such as $m=DecSym(SK, EM, IV,AT)$.
+The client extracts the cryptographic parameters from the message itself. The client decrypts the encrypted message $em$ under $SK$ such as $m=DecSym(SK, em, IV,AT)$.
 
 \subsection{Browsing older messages}
 The Id of $SK$ is not used to authenticate messages since we're using the Galois/Counter mode which is self authenticated. But the ID of the $SK$ is used to browse older messages which were encrypted under another $SK$.
 \subsubsection{Getting the appropriate ID}
 Every message is composed of an ID which corresponds with a $SK$ stored in the server. The client reads the ID of the message and gets the corresponding $SK$ to decrypt it.
+
+\section{Group mode}
+This mode is a $GS$.
+
 \end{document}
 
