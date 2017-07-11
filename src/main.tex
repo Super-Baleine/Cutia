@@ -56,7 +56,7 @@ To register, the user has to provide a Passphrase $P$. The user's $KAK$ is gener
 \subsubsection{$P$ derivation \& $CEK$ generation}
 Once the user's Passphrase $P$ defined, a random Salt is generated on 128 bits. We proceed to a key derivation to obtain the user's $KEK$ such as $KEK=KDF(P, Salt, 7000)$. In the meantime, the $CEK$ is generated.
 \subsubsection{Storage \& Encryption of $PKA$}
-The user's $PKA$ has to be encrypted before being sent to the server. A random initialization vector (IV) and authentication tag (AT) are randomly generated on 128 bits. We proceed to the encryption of $PKA$ as $EncSym(CEK, PKA, IV, AT)$. Once encrypted, the encrypted $PKA$ is sent to the server with the IV, AT.
+The user's $PKA$ has to be encrypted before being sent to the server. A random initialization vector (IV) and authentication tag (AT) are randomly generated on 128 bits. We proceed to the encryption of $PKA$ as $EncSym(CEK, PKA, IV, AT)$. Once encrypted, the encrypted $PKA$ is sent to the server with the IV, AT such as $PKA=(PKA||IV||AT)$.
 \subsubsection{Storage \& Encryption of $CEK$}
 A random IV and AT are generated on 128 bits. $CEK$ is encrypted under the $KEK$ such as $EncSym(KEK,CEK, IV, AT)$. Before sending $CEK$ to the server we encapsulate the cryptographic parameters IV, AT, the encrypted $CEK$ (eCEK) and the Salt such as $CEK=(eCEK||Salt||IV||AT)$. We're now able to send the encrypted $CEK$ to the server.
 
