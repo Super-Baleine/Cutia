@@ -33,9 +33,9 @@ I thought about this protocol because I was bored to see that all encrypted mess
     \item \textbf{Passphrase ($P$)}:
     User's defined alphanumeric UTF-8 passphrase during registration on the client side.
     \item \textbf{Key Encryption Key ($KEK$)}:
-    256-bit symmetric key used to encrypt the user's $CEK$.
+    256-bit symmetric key derived from $P$ at the client-side used to encrypt the user's $CEK$.
     \item \textbf{Content Encryption Key ($CEK$)}:
-    256-bit symmetric key randomly generated which is used to encrypt the user's $PKA$, and every $SK$ that he has to store.
+    256-bit symmetric key randomly generated at the client-side which is used to encrypt the user's $PKA$, and every $SK$ that he has to store.
     \item \textbf{Key derivation function}:
     Every derivation function is performed with PBKDF2. We denote this process as $KDF(x, s, i)$, where x is the passphrase, s the Salt, and i is the strengthen by factor and always equals 7000.
     \item \textbf{Symmetric Encryption function}:
