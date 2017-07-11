@@ -35,7 +35,9 @@ I thought about this protocol because I was bored to see that all encrypted mess
     \item \textbf{Passphrase ($P$)}:
     User's defined alphanumeric UTF-8 passphrase during registration on the client side.
     \item \textbf{Key Encryption Key ($KEK$)}:
-    256-bit symmetric key used to encrypt the user's $PAK$.
+    256-bit symmetric key used to encrypt the user's $CEK$.
+    \item \textbf{Content Encryption Key ($CEK$)}:
+    256-bit symmetric key randomly generated which is used to encrypt the user's $PKA$, and every $SK$ that he has to store.
     \item \textbf{Key derivation function}:
     Every derivation function is performed with PBKDF2. We denote this process as $KDF(x, s, i)$, where x is the passphrase, s the Salt, and i is the strengthen by factor and always equals 7000.
     \item \textbf{Symmetric Encryption function}:
@@ -51,17 +53,21 @@ I thought about this protocol because I was bored to see that all encrypted mess
 \section{User}
 \subsection{Registration}
 To register, the user has to provide a Passphrase $P$. The user's $KAK$ is generated while this one is registering. The $PKA$ has to be encrypted before being sent to the server. $PKB$ is sent to the server and stored in plain text.
-\subsubsection{$P$ derivation}
-Once the user's Passphrase $P$ defined, a random Salt is generated on 128 bits. We proceed to a key derivation to obtain the user's $KEK$ such as $KEK=KDF(P, Salt, 7000)$.
+\subsubsection{$P$ derivation \& $CEK$ generation}
+Once the user's Passphrase $P$ defined, a random Salt is generated on 128 bits. We proceed to a key derivation to obtain the user's $KEK$ such as $KEK=KDF(P, Salt, 7000)$. In the meantime, the $CEK$ is generated.
 \subsubsection{Storage \& Encryption of $PKA$}
-The user's $PKA$ has to be encrypted before being sent to the server. A random initialization vector (IV) and authentication tag (AT) are randomly generated on 128 bits. We proceed to the encryption of $PKA$ as $EncSym(KEK, PKA, IV, AT)$. Once encrypted, the encrypted $PKA$ is sent to the server with the IV, AT, and Salt.
+The user's $PKA$ has to be encrypted before being sent to the server. A random initialization vector (IV) and authentication tag (AT) are randomly generated on 128 bits. We proceed to the encryption of $PKA$ as $EncSym(CEK, PKA, IV, AT)$. Once encrypted, the encrypted $PKA$ is sent to the server with the IV, AT.
+\subsubsection{Storage \& Encryption of $CEK$}
+A random IV and AT are generated on 128 bits. $CEK$ is encrypted under the $KEK$ such as $EncSym(KEK,CEK, IV, AT)$. Before sending $CEK$ to the server we encapsulate the cryptographic parameters IV, AT, the encrypted $CEK$ (eCEK) and the Salt such as $CEK=(eCEK||Salt||IV||AT)$. We're now able to send the encrypted $CEK$ to the server.
 
 \subsection{Connection}
-Once the user authenticated in the system of the application, the client gets the user's KEK cryptographic parameters and also gets the $KAK$. The user types his Passphrase $P$.
+Once the user authenticated in the system of the application, the client gets user's $KAK$ and the $CEK$ which are stored encrypted in the server. The user types his Passphrase $P$.
 \subsubsection{$P$ derivation}
-The $KEK$ cryptographic parameters are the initialization vector (IV), the authentication tag (AT), and the Salt. We proceed to the derivation of the user's Passphrase $P$ such as $KEK=KDF(P, Salt, 7000)$.
+From the encrypted $CEK$, we extract the Salt. We proceed to the derivation of the user's Passphrase $P$ such as $KEK=KDF(P, Salt, 7000)$.
+\subsubsection{$CEK$ decryption}
+We proceed to a symmetric decryption function to obtain the decrypted $CEK$ such as $CEK=DecSym(KEK, CEK, IV,AT)$.
 \subsubsection{$PKA$ decryption}
-From the $KAK$ we get the $PKA$ and decrypt it such as $DecSym(KEK, PKA, IV, AT)$.
+From the $KAK$ we get the $PKA$ and decrypt it such as $DecSym(CEK, PKA, IV, AT)$.
 
 \section{Paranoiac mode}
 This mode is a $CS$ that doesn't support more than one device of every user and doesn't support any history. $SK$ is stored in the device, but isn't sent to the server.
@@ -72,6 +78,10 @@ For every message are generated an initialization vector (IV) and an authenticat
 
 \subsubsection{Message Decryption}
 The client gets the newly arrived message. From $m$ it extracts the encrypted message $EM$, the IV and the AT. The client proceeds to a symmetric decryption to get the plain text message $M$ such as $M=DecSym(SK, EM, IV, AT)$.
+
+\section{Basic mode}
+This mode is a $CS$ that supports keys history. This is useful to provide a multi-device messaging service.
+\subsection{}
 
 \end{document}
 
