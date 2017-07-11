@@ -112,6 +112,9 @@ Every message is composed of an ID which corresponds with a $SK$ stored in the s
 
 \section{Group mode}
 This mode is a $GS$.
-
+\subsection{$SK$ exchange}
+One of the participants (users) generates a new $SK$ and its ID. The user also gets the public keys of every participant and encrypts the message as many times as there are pubic keys ($PK$) such as $EncAsym(PK, SK)$ and encapsulate $SK$ and its ID as a packet $packet$ such as $packet=(SK||ID)$. Once this done, the user sends $packet$ to every participant.
+\subsection{Joining a group}
+The one's client who invited the user gets the $PKB$ of this user and encrypt the $SK$ of the group such as $EncAsym(PKB,SK)$. Once encrypted, $SK$ is put in a packet $packet$ such as $packet=(SK||ID)$.
 \end{document}
 
